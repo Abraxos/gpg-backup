@@ -59,11 +59,25 @@ def transfer_encrypted_file(file_path, remote_user, remote_url, remote_port,
     print('TRANSFERRING FILE:\n\tSRC: {0}\n\tDST: {1}'.format(file_path, dst_str))
     cmd = ['rsync', '--progress', '-Parvzy', file_path, '-e',
            'ssh -p {0}'.format(remote_port), dst_str]
-    print(cmd)
     process = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
     rsync_stdout = process.communicate()[0]
-    print(rsync_stdout)
     process.stdin.close()
+
+
+def load_encrypted_backup(dst_dir, remote_user, remote_url, remote_port, remote_dir):
+        src_str = remote_dir
+        src_str = remote_url + ':' + src_str if remote_url else src_str
+        src_str = remote_user + '@' + src_str if remote_user else src_str
+        print('DOWNLOADING ECNRYPTED FILES:\n\tSRC: {0}\n\tDST: {1}'.format(file_path, dst_dir))
+        cmd = ['rsync', '--progress', '-Parvzy', '-e',
+               'ssh -p {0}'.format(remote_port), src_str, dst_dir]
+        process = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        rsync_stdout = process.communicate()[0]
+        process.stdin.close()
+
+
+def process_decrypt_directory(encrypted_entries, temp_dir, dst_dir):
+    pass
 
 
 def process_encrypt_directory(dir_path, remote_user, remote_url, remote_port,
@@ -147,8 +161,8 @@ def main():
 
         with open(logfile,'a+') as log:
             # Prompt the user for a password
-            # The author of this software strongly discourages modifying this program
-            # to take a password as a commandline parameter.
+            # The author of this software strongly discourages modifying this
+            # program to take a password as a commandline parameter.
             passphrase = bytes(getpass('Password: '), 'utf-8')
 
             # Execute recursive call to backup the directory
